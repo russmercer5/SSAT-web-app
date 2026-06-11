@@ -1,0 +1,33 @@
+gitignore
+# User data (don't upload to GitHub)
+users.csv
+sample_test_data.csv
+user_data/
+*.csv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Render
+.render/
