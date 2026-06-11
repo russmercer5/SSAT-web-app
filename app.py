@@ -5476,16 +5476,65 @@ button:hover { background: #004; }
 
 
 # === Routes ===
+##@app.route('/', methods=['GET', 'POST'])
+##def login():
+##    error = ''
+##    if request.method == 'POST':
+##        username = request.form.get('username')
+##        password = request.form.get('password')
+##        
+##        if verify_user(username, password):
+##            session['user'] = username
+##            session['is_admin'] = is_admin(username)
+##            session['problems'] = []
+##            session['answers'] = []
+##            session['correct_indices'] = []
+##            return redirect(url_for('home'))
+##        else:
+##            error = '<p style="color:red">Invalid credentials</p>'
+##    
+##    login_form = f"""
+##    <!doctype html>
+##    <html>
+##    <head>
+##        <meta charset="utf-8">
+##        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+#        <title>Login - SSAT Study App</title>
+#        <style>
+#        * {{ box-sizing: border-box; }}
+#        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f0f4f8; color:#1a2a3a; padding:20px; margin:0; }}
+#        .login {{ max-width:420px; margin:80px auto; background:white; padding:24px; border-radius:20px; box-shadow:0 8px 24px rgba(0,0,0,0.1); }}
+#        input {{ width:100%; padding:12px; margin:8px 0; font-size:16px; border-radius:12px; border:2px solid #006; box-sizing: border-box; }}
+#        button {{ background:#006; color:white; border:none; padding:12px; border-radius:12px; cursor:pointer; width:100%; font-size:16px; font-weight:600; }}
+#        h2 {{ margin-top:0; color:#003366; text-align:center; }}
+#        .error {{ color:#c33; text-align:center; }}
+#        .note {{ text-align:center; margin-top:20px; color:#666; font-size:12px; }}
+#        </style>
+#    </head>
+#    <body>
+#        <div class="login">
+#            <h2>📚 SSAT Study App</h2>
+#            {error}
+#            <form method='post'>
+#                <input name='username' placeholder='Username' required><br>
+#                <input type='password' name='password' placeholder='Password' required><br>
+#                <button type='submit'>Login</button>
+#            </form>
+#            <div class="note">
+#                Contact your administrator for login credentials.
+#            </div>
+#        </div>
+#    </body>
+#    </html>
+#    """
+#    return login_form
+
 @app.route('/', methods=['GET', 'POST'])
 def login():
     error = ''
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        if verify_user(username, password):
-            session['user'] = username
-            session['is_admin'] = is_admin(username)
+        if request.form.get('username') == USERNAME and request.form.get('password') == PASSWORD:
+            session['user'] = USERNAME
             session['problems'] = []
             session['answers'] = []
             session['correct_indices'] = []
@@ -5502,13 +5551,12 @@ def login():
         <title>Login - SSAT Study App</title>
         <style>
         * {{ box-sizing: border-box; }}
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f0f4f8; color:#1a2a3a; padding:20px; margin:0; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f0f4f8; padding:20px; margin:0; }}
         .login {{ max-width:420px; margin:80px auto; background:white; padding:24px; border-radius:20px; box-shadow:0 8px 24px rgba(0,0,0,0.1); }}
         input {{ width:100%; padding:12px; margin:8px 0; font-size:16px; border-radius:12px; border:2px solid #006; box-sizing: border-box; }}
         button {{ background:#006; color:white; border:none; padding:12px; border-radius:12px; cursor:pointer; width:100%; font-size:16px; font-weight:600; }}
         h2 {{ margin-top:0; color:#003366; text-align:center; }}
         .error {{ color:#c33; text-align:center; }}
-        .note {{ text-align:center; margin-top:20px; color:#666; font-size:12px; }}
         </style>
     </head>
     <body>
@@ -5520,14 +5568,13 @@ def login():
                 <input type='password' name='password' placeholder='Password' required><br>
                 <button type='submit'>Login</button>
             </form>
-            <div class="note">
-                Contact your administrator for login credentials.
-            </div>
         </div>
     </body>
     </html>
     """
     return login_form
+
+
 
 @app.route('/home')
 def home():
