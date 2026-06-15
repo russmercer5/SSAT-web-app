@@ -31,3 +31,7 @@ ENV/
 
 # Render
 .render/
+
+flask_session/
+*.pyc
+__pycache__/
