@@ -144,7 +144,7 @@ if ON_RENDER:
         # user[0] is the is_admin value
         return user[0] if user else False
     
-    def create_user(username, password, is_admin=True):
+    def create_user(username, password, is_admin=False):
         """Create a new user"""
         conn = get_db_connection()
         cursor = conn.cursor()
