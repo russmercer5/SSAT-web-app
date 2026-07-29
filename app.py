@@ -412,7 +412,7 @@ else:
 # INITIALIZE STORAGE (works for both modes)
 # ===========================================================
 
-init_storage()
+#init_storage()
 
 
 
