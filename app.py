@@ -57,201 +57,201 @@ ON_RENDER = ON_RENDER or os.environ.get('DATABASE_URL') is not None
 
 if ON_RENDER:
 
-    import pg8000
-    import urllib.parse
+    # import pg8000
+    # import urllib.parse
     
-    def get_db_connection():
-        """Get database connection using Render's DATABASE_URL"""
-        database_url = os.environ.get('DATABASE_URL')
-        if not database_url:
-            raise Exception("DATABASE_URL environment variable not set!")
+    # def get_db_connection():
+    #     """Get database connection using Render's DATABASE_URL"""
+    #     database_url = os.environ.get('DATABASE_URL')
+    #     if not database_url:
+    #         raise Exception("DATABASE_URL environment variable not set!")
         
-        result = urllib.parse.urlparse(database_url)
+    #     result = urllib.parse.urlparse(database_url)
         
-        conn = pg8000.connect(
-            user=result.username,
-            password=result.password,
-            host=result.hostname,
-            port=result.port or 5432,
-            database=result.path[1:]
-        )
-        return conn
+    #     conn = pg8000.connect(
+    #         user=result.username,
+    #         password=result.password,
+    #         host=result.hostname,
+    #         port=result.port or 5432,
+    #         database=result.path[1:]
+    #     )
+    #     return conn
     
-    def init_storage():
-        """Create all tables if they don't exist"""
-        conn = get_db_connection()
-        cursor = conn.cursor()
+    # def init_storage():
+    #     """Create all tables if they don't exist"""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
         
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                username TEXT PRIMARY KEY,
-                password_hash TEXT NOT NULL,
-                is_admin BOOLEAN DEFAULT FALSE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
+    #     cursor.execute('''
+    #         CREATE TABLE IF NOT EXISTS users (
+    #             username TEXT PRIMARY KEY,
+    #             password_hash TEXT NOT NULL,
+    #             is_admin BOOLEAN DEFAULT FALSE,
+    #             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    #         )
+    #     ''')
         
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS attempts (
-                id SERIAL PRIMARY KEY,
-                username TEXT REFERENCES users(username),
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                reading_type TEXT,
-                total_score INTEGER,
-                reading_score INTEGER,
-                verbal_score INTEGER,
-                math_score INTEGER
-            )
-        ''')
+    #     cursor.execute('''
+    #         CREATE TABLE IF NOT EXISTS attempts (
+    #             id SERIAL PRIMARY KEY,
+    #             username TEXT REFERENCES users(username),
+    #             timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    #             reading_type TEXT,
+    #             total_score INTEGER,
+    #             reading_score INTEGER,
+    #             verbal_score INTEGER,
+    #             math_score INTEGER
+    #         )
+    #     ''')
         
-        # Check for admin user
-        cursor.execute("SELECT * FROM users WHERE username = 'admin'")
-        admin_exists = cursor.fetchone()
+    #     # Check for admin user
+    #     cursor.execute("SELECT * FROM users WHERE username = 'admin'")
+    #     admin_exists = cursor.fetchone()
         
-        if not admin_exists:
-            admin_hash = generate_password_hash(os.environ.get('ADMIN_PASSWORD', 'admin123'))
-            cursor.execute(
-                "INSERT INTO users (username, password_hash, is_admin) VALUES (%s, %s, %s)",
-                ('admin', admin_hash, True)
-            )
+    #     if not admin_exists:
+    #         admin_hash = generate_password_hash(os.environ.get('ADMIN_PASSWORD', 'admin123'))
+    #         cursor.execute(
+    #             "INSERT INTO users (username, password_hash, is_admin) VALUES (%s, %s, %s)",
+    #             ('admin', admin_hash, True)
+    #         )
         
-        conn.commit()
-        cursor.close()
-        conn.close()
-        print("PostgreSQL database initialized successfully with pg8000")
+    #     conn.commit()
+    #     cursor.close()
+    #     conn.close()
+    #     print("PostgreSQL database initialized successfully with pg8000")
     
-    def verify_user(username, password):
-        """Verify user credentials"""
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-        user = cursor.fetchone()
-        cursor.close()
-        conn.close()
+    # def verify_user(username, password):
+    #     """Verify user credentials"""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    #     user = cursor.fetchone()
+    #     cursor.close()
+    #     conn.close()
         
-        # user is a tuple: (username, password_hash, is_admin, created_at)
-        if user and check_password_hash(user[1], password):
-            return True
-        return False
+    #     # user is a tuple: (username, password_hash, is_admin, created_at)
+    #     if user and check_password_hash(user[1], password):
+    #         return True
+    #     return False
     
-    def is_admin(username):
-        """Check if user is admin"""
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT is_admin FROM users WHERE username = %s", (username,))
-        user = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        # user[0] is the is_admin value
-        return user[0] if user else False
+    # def is_admin(username):
+    #     """Check if user is admin"""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     cursor.execute("SELECT is_admin FROM users WHERE username = %s", (username,))
+    #     user = cursor.fetchone()
+    #     cursor.close()
+    #     conn.close()
+    #     # user[0] is the is_admin value
+    #     return user[0] if user else False
     
-    def create_user(username, password, is_admin=True):
-        """Create a new user"""
-        conn = get_db_connection()
-        cursor = conn.cursor()
+    # def create_user(username, password, is_admin=True):
+    #     """Create a new user"""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
         
-        # Check if user exists
-        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-        existing = cursor.fetchone()
+    #     # Check if user exists
+    #     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    #     existing = cursor.fetchone()
         
-        if existing:
-            cursor.close()
-            conn.close()
-            return False
+    #     if existing:
+    #         cursor.close()
+    #         conn.close()
+    #         return False
         
-        password_hash = generate_password_hash(password)
-        cursor.execute(
-            "INSERT INTO users (username, password_hash, is_admin) VALUES (%s, %s, %s)",
-            (username, password_hash, is_admin)
-        )
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
+    #     password_hash = generate_password_hash(password)
+    #     cursor.execute(
+    #         "INSERT INTO users (username, password_hash, is_admin) VALUES (%s, %s, %s)",
+    #         (username, password_hash, is_admin)
+    #     )
+    #     conn.commit()
+    #     cursor.close()
+    #     conn.close()
+    #     return True
     
-    def delete_user(username):
-        """Delete a user and all their data"""
-        if username == 'admin':
-            return False
+    # def delete_user(username):
+    #     """Delete a user and all their data"""
+    #     if username == 'admin':
+    #         return False
         
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM attempts WHERE username = %s", (username,))
-        cursor.execute("DELETE FROM users WHERE username = %s", (username,))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     cursor.execute("DELETE FROM attempts WHERE username = %s", (username,))
+    #     cursor.execute("DELETE FROM users WHERE username = %s", (username,))
+    #     conn.commit()
+    #     cursor.close()
+    #     conn.close()
+    #     return True
     
-    def get_all_users():
-        """Get list of all users"""
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT username, is_admin, created_at FROM users ORDER BY created_at")
-        users = cursor.fetchall()
-        cursor.close()
-        conn.close()
+    # def get_all_users():
+    #     """Get list of all users"""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     cursor.execute("SELECT username, is_admin, created_at FROM users ORDER BY created_at")
+    #     users = cursor.fetchall()
+    #     cursor.close()
+    #     conn.close()
         
-        result = []
-        for user in users:
-            # user is a tuple: (username, is_admin, created_at)
-            result.append({
-                'username': user[0],
-                'is_admin': user[1],
-                'created_at': user[2]
-            })
-        return result
+    #     result = []
+    #     for user in users:
+    #         # user is a tuple: (username, is_admin, created_at)
+    #         result.append({
+    #             'username': user[0],
+    #             'is_admin': user[1],
+    #             'created_at': user[2]
+    #         })
+    #     return result
     
-    def save_user_attempt(username, reading_type, total_score, reading_score, verbal_score, math_score):
-        """Save an attempt to PostgreSQL"""
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO attempts (username, reading_type, total_score, reading_score, verbal_score, math_score)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        ''', (username, reading_type, total_score, reading_score, verbal_score, math_score))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        print(f"Saved attempt for {username}: {total_score}%")  # Debug
+    # def save_user_attempt(username, reading_type, total_score, reading_score, verbal_score, math_score):
+    #     """Save an attempt to PostgreSQL"""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     cursor.execute('''
+    #         INSERT INTO attempts (username, reading_type, total_score, reading_score, verbal_score, math_score)
+    #         VALUES (%s, %s, %s, %s, %s, %s)
+    #     ''', (username, reading_type, total_score, reading_score, verbal_score, math_score))
+    #     conn.commit()
+    #     cursor.close()
+    #     conn.close()
+    #     print(f"Saved attempt for {username}: {total_score}%")  # Debug
     
-    def get_user_attempts(username):
-        """Get all attempts for a user from PostgreSQL"""
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('''
-            SELECT * FROM attempts 
-            WHERE username = %s 
-            ORDER BY timestamp
-        ''', (username,))
-        attempts = cursor.fetchall()
-        cursor.close()
-        conn.close()
+    # def get_user_attempts(username):
+    #     """Get all attempts for a user from PostgreSQL"""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     cursor.execute('''
+    #         SELECT * FROM attempts 
+    #         WHERE username = %s 
+    #         ORDER BY timestamp
+    #     ''', (username,))
+    #     attempts = cursor.fetchall()
+    #     cursor.close()
+    #     conn.close()
         
-        result = []
-        for a in attempts:
-            # a is a tuple: (id, username, timestamp, reading_type, total_score, reading_score, verbal_score, math_score)
-            result.append({
-                'id': a[0],
-                'username': a[1],
-                'timestamp': a[2].strftime('%Y-%m-%d %H:%M:%S') if hasattr(a[2], 'strftime') else str(a[2]),
-                'reading_type': a[3],
-                'total_score': a[4],
-                'reading_score': a[5],
-                'verbal_score': a[6],
-                'math_score': a[7]
-            })
-        return result
+    #     result = []
+    #     for a in attempts:
+    #         # a is a tuple: (id, username, timestamp, reading_type, total_score, reading_score, verbal_score, math_score)
+    #         result.append({
+    #             'id': a[0],
+    #             'username': a[1],
+    #             'timestamp': a[2].strftime('%Y-%m-%d %H:%M:%S') if hasattr(a[2], 'strftime') else str(a[2]),
+    #             'reading_type': a[3],
+    #             'total_score': a[4],
+    #             'reading_score': a[5],
+    #             'verbal_score': a[6],
+    #             'math_score': a[7]
+    #         })
+    #     return result
     
-    def reset_user_data(username):
-        """Delete all attempts for a user"""
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('DELETE FROM attempts WHERE username = %s', (username,))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
+    # def reset_user_data(username):
+    #     """Delete all attempts for a user"""
+    #     conn = get_db_connection()
+    #     cursor = conn.cursor()
+    #     cursor.execute('DELETE FROM attempts WHERE username = %s', (username,))
+    #     conn.commit()
+    #     cursor.close()
+    #     conn.close()
+    #     return True
 
 
 else:
