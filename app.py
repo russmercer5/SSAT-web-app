@@ -57,6 +57,8 @@ ON_RENDER = ON_RENDER or os.environ.get('DATABASE_URL') is not None
 
 if ON_RENDER:
 
+    pass
+
     # import pg8000
     # import urllib.parse
     
