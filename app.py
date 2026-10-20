@@ -4,7 +4,7 @@ Editable single-file Flask application for SSAT Verbal & Quantitative practice.
 Mobile-friendly version with all fixes applied.
 """
 
-from flask import Flask, render_template_string, request, redirect, url_for, session, render_template, jsonify
+from flask import Flask, render_template_string, request, redirect, url_for, session, render_template, jsonify, flask_session
 import random
 from fractions import Fraction
 import math
